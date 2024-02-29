@@ -1,6 +1,6 @@
 import React from "react";
 
-const RecipeExerpt = ({ recipe }) => {
+const RecipeExerpt = ({ recipe, handleSelectRecipe }) => {
     return (
         <article className="recipe-card">
             <figure>
@@ -8,7 +8,7 @@ const RecipeExerpt = ({ recipe }) => {
             </figure>
             <h2>{recipe.title}</h2>
             <p className="flex-spacing">Description: {recipe.description}</p>
-            <button>View</button>
+            <button onClick={() => handleSelectRecipe(recipe)}>View</button>
             </article>
     );
 };
