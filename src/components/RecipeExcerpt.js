@@ -1,6 +1,6 @@
 import React from "react";
 
-const RecipeExerpt = ({ recipe, handleSelectRecipe }) => {
+const RecipeExcerpt = ({ recipe, handleSelectRecipe }) => {
     return (
         <article className="recipe-card">
             <figure>
@@ -15,4 +15,4 @@ const RecipeExerpt = ({ recipe, handleSelectRecipe }) => {
 
 
 
-export default RecipeExerpt;
+export default RecipeExcerpt;
