@@ -133,7 +133,7 @@ function App() {
   const handleSearch = () => {
     const searchResults = recipes.filter((recipe) => {
       const valuesToSearch = [recipe.title, recipe.ingredients, recipe.description];
-      return valuesToSearch.some((value) =>value.toLowerCase().includes(searchTerm.toLowerCase()));
+      return valuesToSearch.some((value) => value.toLowerCase().includes(searchTerm.toLowerCase()));
     })
     return searchResults;
   };
@@ -158,7 +158,7 @@ function App() {
   const updateSearchTerm = (text) => {
     setSearchTerm(text);
   };
-  
+
   const onUpdateForm = (e, action = "new") => {
     const { name, value } = e.target;
     if (action === "update") {
@@ -168,15 +168,23 @@ function App() {
     };
   };
 
+  const displayAllRecipes = () => {
+    hideRecipeForm();
+    handleUnselectRecipe();
+    updateSearchTerm("");
+  };
 
-const displayedRecipes = searchTerm ? handleSearch() : recipes;
+  const displayedRecipes = searchTerm ? handleSearch() : recipes;
+
+
 
 
   return (
     <div className='recipe-app'>
-      <Header showRecipeForm={showRecipeForm} 
-      searchTerm={searchTerm}
-      updateSearchTerm={updateSearchTerm}
+      <Header showRecipeForm={showRecipeForm}
+        searchTerm={searchTerm}
+        updateSearchTerm={updateSearchTerm}
+        displayAllRecipes={displayAllRecipes}
       />
       {showNewRecipeForm && (
         <NewRecipeForm
