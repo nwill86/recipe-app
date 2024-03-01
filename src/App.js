@@ -3,6 +3,7 @@ import Header from "./components/Header";
 import RecipeExcerpt from "./components/RecipeExcerpt";
 import RecipeFull from "./components/RecipeFull";
 import NewRecipeForm from "./components/NewRecipeForm";
+import EditRecipeForm from "./components/EditRecipeForm";
 import "./App.css";
 
 
@@ -30,11 +31,10 @@ function App() {
           const data = await response.json();
           setRecipes(data);
         } else {
-          console.log("Oops - could not fetch recipes!")
+          console.log("Oops - could not fetch recipes!");
         }
       } catch (e) {
         console.error("An error occured during the request", e);
-        console.log("An unexpected error occured. Please try again later.")
       }
     };
     fetchAllRecipes();
@@ -76,58 +76,95 @@ function App() {
     }
   };
 
+  const handleUpdateRecipe = async (e, selectedRecipe) => {
+    e.preventDefault();
+    const { id } = selectedRecipe;
 
-  const handleSelectRecipe = (recipe) => {
-    setSelectedRecipe(recipe);
-  };
+    try {
+      const response = await fetch(`/api/recipes/${id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(selectedRecipe)
+      });
 
-  const handleUnselectRecipe = () => {
+      if (response.ok) {
+        const data = await response.json();
+
+        setRecipes(
+          recipes.map((recipe) => {
+            if (recipe.id === id) {
+              return data.recipe;
+            }
+            return recipe;
+          })
+        );
+        console.log("Recipe updated successfully!");
+      } else {
+        console.error("Could not update recipe. Please try again.");
+      }
+    } catch (e) {
+      console.error("An error occured. Please try again later.");
+    }
     setSelectedRecipe(null);
   };
 
-
-  const hideRecipeForm = () => {
-    setShowNewRecipeForm(false);
-  };
-
-  const showRecipeForm = () => {
-    setShowNewRecipeForm(true);
-    setSelectedRecipe(null);
-  };
-
-  const onUpdateForm = (e) => {
-    const { name, value } = e.target;
-    setNewRecipe({ ...newRecipe, [name]: value });
-  };
-
-
-
-  return (
-    <div className='recipe-app'>
-      <Header showRecipeForm={showRecipeForm} />
-      {showNewRecipeForm && (
-        <NewRecipeForm
-          newRecipe={newRecipe}
-          hideRecipeForm={hideRecipeForm}
-          onUpdateForm={onUpdateForm}
-          handleNewRecipe={handleNewRecipe}
-        />
-      )}
-
-      {selectedRecipe && <RecipeFull selectedRecipe={selectedRecipe}
-        handleUnselectRecipe={handleUnselectRecipe} />}
-      {!selectedRecipe && !showNewRecipeForm && (
-        <div className="recipe-list">
-          {recipes.map(recipe => (
-            <RecipeExcerpt key={recipe.id}
-              recipe={recipe}
-              handleSelectRecipe={handleSelectRecipe} />
-          ))}
-        </div>
-      )}
-    </div>
-
-  );
+const handleSelectRecipe = (recipe) => {
+  setSelectedRecipe(recipe);
 };
+
+const handleUnselectRecipe = () => {
+  setSelectedRecipe(null);
+};
+
+const hideRecipeForm = () => {
+  setShowNewRecipeForm(false);
+};
+
+const showRecipeForm = () => {
+  setShowNewRecipeForm(true);
+  setSelectedRecipe(null);
+};
+
+const onUpdateForm = (e, action = "new") => {
+  const { name, value } = e.target;
+  if (action === "update") {
+    setSelectedRecipe({ ...selectedRecipe, [name]: value });
+  } else if (action === "new") {
+    setNewRecipe({ ...newRecipe, [name]: value });
+  }
+};
+
+return (
+  <div className='recipe-app'>
+    <Header showRecipeForm={showRecipeForm} />
+      {showNewRecipeForm && (
+       <NewRecipeForm
+        newRecipe={newRecipe}
+        hideRecipeForm={hideRecipeForm}
+        onUpdateForm={onUpdateForm}
+        handleNewRecipe={handleNewRecipe}
+      />
+    )}
+    {selectedRecipe && (<RecipeFull selectedRecipe={selectedRecipe}
+      handleUnselectRecipe={handleUnselectRecipe}
+      onUpdateForm={onUpdateForm}
+      handleUpdateRecipe={handleUpdateRecipe}
+    />
+    )}
+    {!selectedRecipe && !showNewRecipeForm && (
+      <div className='recipe-list'>
+        {recipes.map((recipe) => (
+          <RecipeExcerpt key={recipe.id}
+            recipe={recipe}
+            handleSelectRecipe={handleSelectRecipe} />
+        ))}
+      </div>
+    )}
+  </div>
+  );
+}
+
 
 export default App;
