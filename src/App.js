@@ -3,7 +3,6 @@ import Header from "./components/Header";
 import RecipeExcerpt from "./components/RecipeExcerpt";
 import RecipeFull from "./components/RecipeFull";
 import NewRecipeForm from "./components/NewRecipeForm";
-import EditRecipeForm from "./components/EditRecipeForm";
 import "./App.css";
 
 
@@ -110,59 +109,80 @@ function App() {
     setSelectedRecipe(null);
   };
 
-const handleSelectRecipe = (recipe) => {
-  setSelectedRecipe(recipe);
-};
 
-const handleUnselectRecipe = () => {
-  setSelectedRecipe(null);
-};
+  const handleDeleteRecipe = async (recipeId) => {
+    try {
+      const response = await fetch(`/api/recipes/${recipeId}`, {
+        method: "DELETE"
+      });
 
-const hideRecipeForm = () => {
-  setShowNewRecipeForm(false);
-};
+      if (response.ok) {
+        setRecipes(recipes.filter((recipe) => recipe.id !== recipeId));
+        setSelectedRecipe(null);
+        console.log("Recipe deleted successfully!");
+      } else {
+        console.error("Could not delete recipe. Please try again.");
+      }
+    } catch (e) {
+      console.error("Something went wrong during the request:", e);
+      console.error("An error occured. Please try again later.");
+    }
+  };
 
-const showRecipeForm = () => {
-  setShowNewRecipeForm(true);
-  setSelectedRecipe(null);
-};
+  const handleSelectRecipe = (recipe) => {
+    setSelectedRecipe(recipe);
+  };
 
-const onUpdateForm = (e, action = "new") => {
-  const { name, value } = e.target;
-  if (action === "update") {
-    setSelectedRecipe({ ...selectedRecipe, [name]: value });
-  } else if (action === "new") {
-    setNewRecipe({ ...newRecipe, [name]: value });
-  }
-};
+  const handleUnselectRecipe = () => {
+    setSelectedRecipe(null);
+  };
 
-return (
-  <div className='recipe-app'>
-    <Header showRecipeForm={showRecipeForm} />
+  const hideRecipeForm = () => {
+    setShowNewRecipeForm(false);
+  };
+
+  const showRecipeForm = () => {
+    setShowNewRecipeForm(true);
+    setSelectedRecipe(null);
+  };
+
+  const onUpdateForm = (e, action = "new") => {
+    const { name, value } = e.target;
+    if (action === "update") {
+      setSelectedRecipe({ ...selectedRecipe, [name]: value });
+    } else if (action === "new") {
+      setNewRecipe({ ...newRecipe, [name]: value });
+    }
+  };
+
+  return (
+    <div className='recipe-app'>
+      <Header showRecipeForm={showRecipeForm} />
       {showNewRecipeForm && (
-       <NewRecipeForm
-        newRecipe={newRecipe}
-        hideRecipeForm={hideRecipeForm}
-        onUpdateForm={onUpdateForm}
-        handleNewRecipe={handleNewRecipe}
-      />
-    )}
-    {selectedRecipe && (<RecipeFull selectedRecipe={selectedRecipe}
-      handleUnselectRecipe={handleUnselectRecipe}
-      onUpdateForm={onUpdateForm}
-      handleUpdateRecipe={handleUpdateRecipe}
-    />
-    )}
-    {!selectedRecipe && !showNewRecipeForm && (
-      <div className='recipe-list'>
-        {recipes.map((recipe) => (
-          <RecipeExcerpt key={recipe.id}
-            recipe={recipe}
-            handleSelectRecipe={handleSelectRecipe} />
-        ))}
-      </div>
-    )}
-  </div>
+        <NewRecipeForm
+          newRecipe={newRecipe}
+          hideRecipeForm={hideRecipeForm}
+          onUpdateForm={onUpdateForm}
+          handleNewRecipe={handleNewRecipe}
+        />
+      )}
+      {selectedRecipe && (
+        <RecipeFull
+          selectedRecipe={selectedRecipe}
+          handleUnselectRecipe={handleUnselectRecipe}
+          onUpdateForm={onUpdateForm}
+          handleUpdateRecipe={handleUpdateRecipe}
+          handleDeleteRecipe={handleDeleteRecipe}
+        />
+      )}
+      {!selectedRecipe && !showNewRecipeForm && (
+        <div className='recipe-list'>
+          {recipes.map((recipe) => (
+            <RecipeExcerpt key={recipe.id} recipe={recipe} handleSelectRecipe={handleSelectRecipe} />
+          ))}
+        </div>
+      )}
+    </div>
   );
 }
 
