@@ -2,7 +2,6 @@ from flask import Flask, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
-
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///recipes.db'
 db = SQLAlchemy(app)
 
@@ -39,7 +38,7 @@ def get_all_recipes():
         })
     return jsonify(recipe_list)
 
-@app.route('/api/recipes/', methods=['POST'])
+@app.route('/api/recipes', methods=['POST'])
 def add_recipe():
     data = request.get_json()
     
