@@ -3,6 +3,9 @@ import Header from "./components/Header";
 import RecipeExcerpt from "./components/RecipeExcerpt";
 import RecipeFull from "./components/RecipeFull";
 import NewRecipeForm from "./components/NewRecipeForm";
+import { ToastContainer } from "react-toastify";
+import displayToast from "./helpers/toastHelper";
+import "react-toastify/dist/ReactToastify.css";
 import "./App.css";
 
 
@@ -31,10 +34,10 @@ function App() {
           const data = await response.json();
           setRecipes(data);
         } else {
-          console.log("Oops - could not fetch recipes!");
+          displayToast("Oops - could not fetch recipes!", "error");
         }
       } catch (e) {
-        console.error("An error occured during the request", e);
+        displayToast("An error occured during the request", "error");
       }
     };
     fetchAllRecipes();
@@ -57,7 +60,7 @@ function App() {
 
         setRecipes([...recipes, data.recipe]);
 
-        console.log("Recipe added successfully!");
+        displayToast("Recipe added successfully!", "success");
 
         setShowNewRecipeForm(false);
         setNewRecipe({
@@ -69,10 +72,10 @@ function App() {
           image_url: "https://images.pexels.com/photos/9986228/pexels-photo-9986228.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
         });
       } else {
-        console.error("Oops - could not add recipe!");
+        displayToast("Oops - could not add recipe!", "error");
       }
     } catch (e) {
-      console.error("An error occured during the request", e);
+      displayToast("An error occured during the request", "error");
     }
   };
 
@@ -100,12 +103,12 @@ function App() {
             return recipe;
           })
         );
-        console.log("Recipe updated successfully!");
+        displayToast("Recipe updated successfully!", "success");
       } else {
-        console.error("Could not update recipe. Please try again.");
+        displayToast("Could not update recipe. Please try again.", "error");
       }
     } catch (e) {
-      console.error("An error occured. Please try again later.");
+      displayToast("An error occured. Please try again later.", "error");
     }
     setSelectedRecipe(null);
   };
@@ -120,13 +123,13 @@ function App() {
       if (response.ok) {
         setRecipes(recipes.filter((recipe) => recipe.id !== recipeId));
         setSelectedRecipe(null);
-        console.log("Recipe deleted successfully!");
+        displayToast("Recipe deleted successfully!", "success");
       } else {
-        console.error("Could not delete recipe. Please try again.");
+        displayToast("Could not delete recipe. Please try again.", "error");
       }
     } catch (e) {
-      console.error("Something went wrong during the request:", e);
-      console.error("An error occured. Please try again later.");
+      displayToast("Something went wrong during the request:", "error");
+      displayToast("An error occured. Please try again later.", "error");
     }
   };
 
@@ -210,6 +213,7 @@ function App() {
           ))}
         </div>
       )}
+      <ToastContainer />
     </div>
   );
 }
